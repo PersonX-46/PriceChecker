@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:pricechecker/db_connection.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
 import 'build_result_card.dart';
+import 'package:intl/intl.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -35,14 +39,79 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   String description = "N/A";
   String unitPrice = "N/A";
   String locationPrice = "N/A";
+  TextEditingController barcodeController = TextEditingController();
 
-  void onBarcodeEntered(String value) {
+  @override
+  void dispose() {
+    barcodeController.dispose();
+    super.dispose();
+  }
+
+  late DBConnection db;
+
+  @override
+  void initState() {
+    super.initState();
+    db = DBConnection();
+    initDatabase();
+  }
+
+  Future<void> initDatabase() async {
+    try {
+      await db.initConnection();
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "$e",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  void onBarcodeEntered(String value) async{
     setState(() {
       barcode = value;
-      description = "Sample Description for $value";
-      unitPrice = 'RM 10.00';
-      locationPrice = "RM12.00";
     });
+
+    try {
+      String itemDetails = await db.getItemsByBarcode(value);
+
+      List<dynamic> items = jsonDecode(itemDetails);
+
+      if (items.isNotEmpty) {
+        final item = items[0];
+
+        final formatter = NumberFormat("RM 0.00");
+
+        setState(() {
+          description = item['Description'] ?? "N/A";
+          unitPrice = item['DefaultUnitPrice'] != null
+          ? formatter.format(item['DefaultUnitPrice']) : "N/A";
+          locationPrice = item['PosUnitPrice'] != null
+          ? formatter.format(item['PosUnitPrice']) : "N/A";
+        });
+      }
+      Fluttertoast.showToast(
+        msg: "Item found: $itemDetails",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error: $e",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   @override
@@ -104,7 +173,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                       children: [
                         Expanded(
                           child: TextField(
-                            onSubmitted: onBarcodeEntered,
+                            controller: barcodeController,
                             decoration: const InputDecoration(
                               labelText: 'Enter Barcode',
                               labelStyle: TextStyle(
@@ -117,7 +186,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            onBarcodeEntered("12345");
+                            onBarcodeEntered(barcodeController.text.trim());
                           },
                           child: const Text(
                             "Search",
