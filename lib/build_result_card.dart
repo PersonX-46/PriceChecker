@@ -5,20 +5,20 @@ Widget buildResultCard({
   required String value,
   required IconData icon,
   required List<Color> gradient,
-}){
+}) {
   return LayoutBuilder(
     builder: (context, constraints) {
-      double iconSize = constraints.maxWidth * 0.2;
-      double textSize = constraints.maxWidth > 300 ? 16 : 14;
-      double valueSize = constraints.maxWidth > 300 ? 18 : 16;
+      double iconSize = constraints.maxWidth * 0.3; // Smaller icon size for compact devices
+      double textSize = constraints.maxWidth > 300 ? 32 : 12; // Adjust text size for small screens
+      double valueSize = constraints.maxWidth > 300 ? 30 : 14;
+      double padding = constraints.maxWidth > 300 ? 16 : 8; // Adjust padding
 
       return Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
         elevation: 4,
-
-        margin: const EdgeInsets.symmetric(vertical: 8),
+        margin: EdgeInsets.symmetric(vertical: constraints.maxWidth > 300 ? 8 : 4),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -26,14 +26,18 @@ Widget buildResultCard({
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             child: Row(
               children: [
-                Icon(icon, color: Colors.white, size: iconSize,),
-                const SizedBox(width: 16,),
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: iconSize,
+                ),
+                SizedBox(width: constraints.maxWidth > 300 ? 16 : 8), // Adjust spacing
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,20 +51,20 @@ Widget buildResultCard({
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 4,),
+                      SizedBox(height: constraints.maxWidth > 300 ? 4 : 2), // Adjust spacing
                       Text(
                         value,
                         style: TextStyle(
-                            fontSize: valueSize,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white
+                          fontSize: valueSize,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
