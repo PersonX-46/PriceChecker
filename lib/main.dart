@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pricechecker/db_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -34,20 +35,20 @@ class PriceCheckerPage extends StatefulWidget {
 }
 
 class _PriceCheckerPageState extends State<PriceCheckerPage> {
-
   String barcode = "N/A";
   String description = "N/A";
   String unitPrice = "N/A";
   String locationPrice = "N/A";
   TextEditingController barcodeController = TextEditingController();
+  late DBConnection db;
+  Timer? _debounce;
 
   @override
   void dispose() {
     barcodeController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
-
-  late DBConnection db;
 
   @override
   void initState() {
@@ -59,64 +60,62 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   Future<void> initDatabase() async {
     try {
       await db.initConnection();
+      await db.fetchAllItems();
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "$e",
+        msg: "mmm$e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
         textColor: Colors.white,
         fontSize: 16.0,
       );
+      throw Exception(e);
     }
   }
 
-  void onBarcodeEntered(String value) async{
-    setState(() {
-      barcode = value;
+  void searchItem(String barcode) {
+    final formatter = NumberFormat("RM 0.00");
+    final item = db.findItemByBarcode(barcode);
+
+    if (item != null) {
+      setState(() {
+        this.barcode = item['Barcode'] ?? "N/A";
+        description = item['Description'] ?? "N/A";
+        unitPrice = item['DefaultUnitPrice'] != null
+          ? formatter.format(item['DefaultUnitPrice'])
+          : "N/A";
+        locationPrice = item['PosUnitPrice'] != null
+          ? formatter.format(item['PosUnitPrice'])
+          : "N/A";
+      });
+    } else {
+      setState(() {
+        this.barcode = barcode;
+        description = "Item not found";
+        unitPrice = "N/A";
+        locationPrice = "N/A";
+      });
+    }
+  }
+
+  void clearBarcode() {
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      barcodeController.clear();
     });
 
-    try {
-      String itemDetails = await db.getItemsByBarcode(value);
-
-      List<dynamic> items = jsonDecode(itemDetails);
-
-      if (items.isNotEmpty) {
-        final item = items[0];
-
-        final formatter = NumberFormat("RM 0.00");
-
-        setState(() {
-          description = item['Description'] ?? "N/A";
-          unitPrice = item['DefaultUnitPrice'] != null
-          ? formatter.format(item['DefaultUnitPrice']) : "N/A";
-          locationPrice = item['PosUnitPrice'] != null
-          ? formatter.format(item['PosUnitPrice']) : "N/A";
-        });
-      }
-      Fluttertoast.showToast(
-        msg: "Item found: $itemDetails",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error: $e",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    bool isSmallScreen = screenWidth < 600;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -132,25 +131,30 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Header
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
                       'assets/images/logo.png',
-                      width: screenWidth * 0.2,
+                      width: isSmallScreen ? screenWidth * 0.3 : screenWidth * 0.2,
                     ),
-                    const SizedBox(width: 10,),
-                    const Text(
-                      "Price Checker",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        "Price Checker",
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 24 : 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20,),
+                const SizedBox(height: 20),
 
+                // Barcode Input
                 Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -174,6 +178,10 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         Expanded(
                           child: TextField(
                             controller: barcodeController,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                             decoration: const InputDecoration(
                               labelText: 'Enter Barcode',
                               labelStyle: TextStyle(
@@ -182,32 +190,38 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                               ),
                               border: InputBorder.none,
                             ),
+                              onChanged: (value) {
+                                // Process the scanned value
+                                searchItem(value.trim());
+
+                                // Clear the TextField after processing
+                                clearBarcode();
+                              },
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            onBarcodeEntered(barcodeController.text.trim());
+                            searchItem(barcodeController.text.trim());
                           },
                           child: const Text(
                             "Search",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 20,),
+                const SizedBox(height: 20),
 
+                // Results Grid
                 Expanded(
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: screenWidth > 600 ? 4 : 2,
+                      crossAxisCount: isSmallScreen ? 2 : 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: screenWidth > 600 ? 1.5 : 1.2,
+                      childAspectRatio: isSmallScreen ? 1.2 : 1.5,
                     ),
                     itemCount: 4,
                     itemBuilder: (context, index) {
@@ -246,13 +260,14 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                       );
                     },
                   ),
-                )
+                ),
+
               ],
-            )
+
+            ),
           ),
         ),
       ),
     );
   }
 }
-

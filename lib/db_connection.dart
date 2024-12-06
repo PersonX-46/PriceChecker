@@ -1,4 +1,6 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mssql_connection/mssql_connection.dart';
+import 'dart:convert';
 
 class DBConnection {
 
@@ -31,12 +33,14 @@ class DBConnection {
     }
   }
 
-  Future<String> getItemsByBarcode(String barcode) async {
+  List<Map<String, dynamic>> _items = [];
+
+  Future<void> fetchAllItems() async {
     if (!_connection.isConnected) {
       throw Exception("Database connection is not initialized");
     }
 
-    final query = """
+    const query = """
     WITH BaseItems AS (
           SELECT
               u.ItemCode,
@@ -50,12 +54,39 @@ class DBConnection {
           LEFT JOIN dbo.Item i ON u.ItemCode = i.ItemCode
           LEFT JOIN dbo.PosPricePlan p ON u.ItemCode = p.ItemCode AND p.Location = 'HQ'
       )
-      SELECT * FROM BaseItems
-      WHERE Barcode = '$barcode';
+      SELECT * FROM BaseItems;
     """;
 
-    final results = await _connection.getData(query);
-    return results;
+    String results = await _connection.getData(query);
+    List<dynamic> result = jsonDecode(results); // Decode JSON as List<dynamic>
+
+    if (result is List) {
+      // Safely cast the result to List<Map<String, dynamic>>
+      _items = List<Map<String, dynamic>>.from(result);
+      _items.sort((a, b) => (a['Barcode'] ?? '').compareTo((b['Barcode'] ?? '')));
+    } else {
+      throw Exception("Invalid data format: Expected a list of maps");
+    }
+  }
+
+
+  Map<String, dynamic>? findItemByBarcode(String barcode) {
+    int left = 0;
+    int right = _items.length -1;
+
+    while (left <= right) {
+      int mid = (left + right) ~/ 2;
+      String midBarcode = _items[mid]['Barcode'];
+
+      if (midBarcode == barcode) {
+        return _items[mid];
+      }else if (midBarcode.compareTo(barcode) < 0) {
+        left = mid + 1;
+      }else {
+        right = mid - 1;
+      }
+    }
+    return null;
   }
 
 }
