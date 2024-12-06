@@ -42,6 +42,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   TextEditingController barcodeController = TextEditingController();
   late DBConnection db;
   Timer? _debounce;
+  FocusNode _barcodeFocusNode = FocusNode();
 
   @override
   void dispose() {
@@ -106,6 +107,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       barcodeController.clear();
+      FocusScope.of(context).requestFocus(_barcodeFocusNode);
     });
 
   }
@@ -178,6 +180,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         Expanded(
                           child: TextField(
                             controller: barcodeController,
+                            focusNode: _barcodeFocusNode,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
