@@ -9,8 +9,8 @@ Widget buildResultCard({
   return LayoutBuilder(
     builder: (context, constraints) {
       double iconSize = constraints.maxWidth * 0.3; // Smaller icon size for compact devices
-      double textSize = constraints.maxWidth > 300 ? 32 : 12; // Adjust text size for small screens
-      double valueSize = constraints.maxWidth > 300 ? 30 : 14;
+      double textSize = constraints.maxWidth > 300 ? 32 : 18; // Adjust text size for small screens
+      double valueSize = constraints.maxWidth > 300 ? 30 : 16;
       double padding = constraints.maxWidth > 300 ? 16 : 8; // Adjust padding
 
       return Card(
