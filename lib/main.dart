@@ -45,6 +45,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   Timer? _debounce;
   FocusNode _barcodeFocusNode = FocusNode();
   late SharedPreferences prefs;
+  bool showLocationPrice = false;
 
   @override
   void dispose() {
@@ -64,6 +65,9 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
 
   void loadConfig() async {
     prefs = await SharedPreferences.getInstance();
+    setState(() {
+      showLocationPrice = prefs.getBool('showLocationPrice')!;
+    });
   }
 
   Future<void> initDatabase() async {
@@ -253,7 +257,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                 Expanded(
                   child: buildResultCard(
                     title: "Price",
-                    value: prefs.getBool('showLocationPrice') == true
+                    value: showLocationPrice == true
                         ? locationPrice
                         : unitPrice,
                     icon: Icons.price_change,
