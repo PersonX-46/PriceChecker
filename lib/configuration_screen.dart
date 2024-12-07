@@ -15,6 +15,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController portController = TextEditingController();
+  bool showLocationPrice = false;
 
   @override
   void initState() {
@@ -32,6 +33,8 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
       usernameController.text = prefs.getString('username') ?? 'NULL';
       passwordController.text = prefs.getString('password') ?? "NULL";
       portController.text = prefs.getString('port') ?? "NULL";
+      showLocationPrice = prefs.getBool('showLocationPrice') ?? false;
+      
     });
   }
 
@@ -42,6 +45,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
     await prefs.setString("username", usernameController.text.trim());
     await prefs.setString('password', passwordController.text.trim());
     await prefs.setString('port', portController.text.trim());
+    await prefs.setBool("showLocationPrice",  showLocationPrice);
 
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Configuration saved successfully!")
@@ -118,6 +122,15 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                         labelText: 'Port',
                         border: OutlineInputBorder(),
                       ),
+                    ),
+                    const SizedBox(height: 16,),
+                    Checkbox(
+                      value: showLocationPrice, // Current state of the checkbox
+                      onChanged: (bool? newValue) {
+                        setState(() {
+                          showLocationPrice = newValue!; // Update the state
+                        });
+                      },
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(

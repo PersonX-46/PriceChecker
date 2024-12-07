@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pricechecker/db_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
+import 'configuration_screen.dart'; // Import your configuration screen
 
 void main() {
   runApp(const MyApp());
@@ -43,6 +44,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   late DBConnection db;
   Timer? _debounce;
   FocusNode _barcodeFocusNode = FocusNode();
+  late SharedPreferences prefs;
 
   @override
   void dispose() {
@@ -53,9 +55,15 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
 
   @override
   void initState() {
+    loadConfig();
     super.initState();
     db = DBConnection();
     initDatabase();
+
+  }
+
+  void loadConfig() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   Future<void> initDatabase() async {
@@ -84,11 +92,11 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
         this.barcode = item['Barcode'] ?? "N/A";
         description = item['Description'] ?? "N/A";
         unitPrice = item['DefaultUnitPrice'] != null
-          ? formatter.format(item['DefaultUnitPrice'])
-          : "N/A";
+            ? formatter.format(item['DefaultUnitPrice'])
+            : "N/A";
         locationPrice = item['PosUnitPrice'] != null
-          ? formatter.format(item['PosUnitPrice'])
-          : "N/A";
+            ? formatter.format(item['PosUnitPrice'])
+            : "N/A";
       });
     } else {
       setState(() {
@@ -109,7 +117,6 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
       barcodeController.clear();
       FocusScope.of(context).requestFocus(_barcodeFocusNode);
     });
-
   }
 
   @override
@@ -119,6 +126,22 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
     bool isSmallScreen = screenWidth < 600;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Price Checker'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              // Navigate to configuration screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
+              );
+            },
+          ),
+        ],
+        backgroundColor: Colors.deepPurple,
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -193,13 +216,13 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                               ),
                               border: InputBorder.none,
                             ),
-                              onChanged: (value) {
-                                // Process the scanned value
-                                searchItem(value.trim());
+                            onChanged: (value) {
+                              // Process the scanned value
+                              searchItem(value.trim());
 
-                                // Clear the TextField after processing
-                                clearBarcode();
-                              },
+                              // Clear the TextField after processing
+                              clearBarcode();
+                            },
                           ),
                         ),
                         ElevatedButton(
@@ -219,54 +242,25 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
 
                 // Results Grid
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: isSmallScreen ? 2 : 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: isSmallScreen ? 1.2 : 1.5,
-                    ),
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      final data = [
-                        {
-                          "title": "Barcode",
-                          "value": barcode,
-                          "icon": Icons.qr_code,
-                          "gradient": [Colors.deepPurpleAccent, Colors.blueAccent],
-                        },
-                        {
-                          "title": "Description",
-                          "value": description,
-                          "icon": Icons.description,
-                          "gradient": [Colors.blueAccent, Colors.teal],
-                        },
-                        {
-                          "title": "Unit Price",
-                          "value": unitPrice,
-                          "icon": Icons.price_change,
-                          "gradient": [Colors.orangeAccent, Colors.yellowAccent],
-                        },
-                        {
-                          "title": "Location Price",
-                          "value": locationPrice,
-                          "icon": Icons.location_on,
-                          "gradient": [Colors.redAccent, Colors.orangeAccent],
-                        },
-                      ];
-                      final item = data[index];
-                      return buildResultCard(
-                        title: item["title"] as String,
-                        value: item["value"] as String,
-                        icon: item["icon"] as IconData,
-                        gradient: item['gradient'] as List<Color>,
-                      );
-                    },
+                  child: buildResultCard(
+                    title: "Barcode & Description",
+                    value: "Barcode: $barcode\n$description",
+                    icon: Icons.qr_code,
+                    gradient: [Colors.blue, Colors.blueAccent],
                   ),
                 ),
-
+                const SizedBox(width: 8), // Add spacing between cards
+                Expanded(
+                  child: buildResultCard(
+                    title: "Price",
+                    value: prefs.getBool('showLocationPrice') == true
+                        ? locationPrice
+                        : unitPrice,
+                    icon: Icons.price_change,
+                    gradient: [Colors.greenAccent, Colors.blueAccent],
+                  ),
+                ),
               ],
-
             ),
           ),
         ),
@@ -274,3 +268,4 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
     );
   }
 }
+

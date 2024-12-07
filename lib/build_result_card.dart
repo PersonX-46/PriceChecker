@@ -8,7 +8,9 @@ Widget buildResultCard({
 }) {
   return LayoutBuilder(
     builder: (context, constraints) {
-      double iconSize = constraints.maxWidth * 0.3; // Smaller icon size for compact devices
+      // Limit icon size to a maximum value to avoid overflow
+      double iconSize = constraints.maxWidth * 0.3;
+
       double textSize = constraints.maxWidth > 300 ? 32 : 18; // Adjust text size for small screens
       double valueSize = constraints.maxWidth > 300 ? 30 : 16;
       double padding = constraints.maxWidth > 300 ? 16 : 8; // Adjust padding
@@ -32,10 +34,15 @@ Widget buildResultCard({
             padding: EdgeInsets.all(padding),
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  color: Colors.white,
-                  size: iconSize,
+                // Ensure the icon doesn't overflow
+                SizedBox(
+                  width: iconSize, // Fixed size to ensure it stays within bounds
+                  height: iconSize,
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: iconSize,
+                  ),
                 ),
                 SizedBox(width: constraints.maxWidth > 300 ? 16 : 8), // Adjust spacing
                 Expanded(
