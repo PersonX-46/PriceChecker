@@ -2,20 +2,32 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mssql_connection/mssql_connection.dart';
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class DBConnection {
 
-  static const String server = "192.168.1.22";
-  static const String databaseName = "AED_ALPHA_FE";
-  static const String username = "test";
-  static const String password = "test";
-  static const String port = '50602';
+  static String server = "192.168.1.22";
+  static String databaseName = "AED_ALPHA_FE";
+  static String username = "test";
+  static String password = "test";
+  static String port = '50602';
 
   late MssqlConnection _connection;
 
   DBConnection() {
+    loadConfig();
     initConnection();
   }
 
+  void loadConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    server = prefs.getString('server') ?? server;
+    databaseName = prefs.getString('database') ?? databaseName;
+    username = prefs.getString('username') ?? username;
+    password = prefs.getString('password') ?? password;
+    port = prefs.getString('port') ?? port;
+  }
+  
   Future<void> initConnection() async {
     _connection = MssqlConnection.getInstance();
     await _connection.connect(
