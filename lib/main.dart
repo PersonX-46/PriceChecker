@@ -66,7 +66,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   void loadConfig() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
-      showLocationPrice = prefs.getBool('showLocationPrice')!;
+      showLocationPrice = prefs.getBool('showLocationPrice') ?? false;
     });
   }
 
