@@ -126,26 +126,9 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     bool isSmallScreen = screenWidth < 600;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Price Checker'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Navigate to configuration screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
-              );
-            },
-          ),
-        ],
-        backgroundColor: Colors.deepPurple,
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -162,22 +145,34 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
               children: [
                 // Header
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.asset(
-                      'assets/images/logo.png',
-                      width: isSmallScreen ? screenWidth * 0.3 : screenWidth * 0.2,
-                    ),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        "Price Checker",
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 24 : 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Price Checker",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 24 : 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings, color: Colors.white), // Add settings icon
+                      onPressed: () {
+                        // Navigate to configuration screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -250,7 +245,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                     title: "Barcode & Description",
                     value: "Barcode: $barcode\n$description",
                     icon: Icons.qr_code,
-                    gradient: [Colors.blue, Colors.blueAccent],
+                    gradient: [Colors.blue, Colors.deepPurple],
                   ),
                 ),
                 const SizedBox(width: 8), // Add spacing between cards
@@ -261,7 +256,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         ? locationPrice
                         : unitPrice,
                     icon: Icons.price_change,
-                    gradient: [Colors.greenAccent, Colors.blueAccent],
+                    gradient: [Colors.teal, Colors.greenAccent],
                   ),
                 ),
               ],
