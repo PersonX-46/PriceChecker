@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:pricechecker/db_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -104,7 +103,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
     } else {
       setState(() {
         this.barcode = barcode;
-        description = "Item not found";
+        description = "Item not not not not not not found found found found found";
         unitPrice = "N/A";
         locationPrice = "N/A";
       });
@@ -144,139 +143,143 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/logo.png',
-                        width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
-                      ),
-                      const SizedBox(width: 10,),
-                      Text(
-                        "Price Checker",
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 24 : 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 10,),
+                        Text(
+                          "Price Checker",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 24 : 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings, color: Colors.white), // Add settings icon
+                      onPressed: () {
+                        // Navigate to configuration screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Barcode Input
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.settings, color: Colors.white), // Add settings icon
-                    onPressed: () {
-                      // Navigate to configuration screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
+                  elevation: 4,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 166, 0, 162),
+                          Color.fromARGB(255, 135, 18, 255),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: barcodeController,
+                            focusNode: _barcodeFocusNode,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: const InputDecoration(
+                              labelText: 'Enter Barcode',
+                              labelStyle: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (value) {
+                              // Process the scanned value
+                              searchItem(value.trim());
+
+                              // Clear the TextField after processing
+                              clearBarcode();
+                            },
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            searchItem(barcodeController.text.trim());
+                          },
+                          child: const Text(
+                            "Search",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Expanded GridView to take remaining space
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount, // 1 in portrait, 2 in landscape
+                      crossAxisSpacing: 8.0,        // Spacing between items horizontally
+                      mainAxisSpacing: 8.0,         // Spacing between items vertically
+                      childAspectRatio: 2,       // Adjust card proportions
+                    ),
+                    shrinkWrap: true,                // Allows GridView to adjust to its children
+                    itemCount: 2,                    // Update this based on the number of cards you have
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return buildResultCard(
+                          textSize: 24,
+                          title: "Barcode & Description",
+                          subtitle: "Barcode: $barcode",
+                          value: description,
+                          icon: Icons.qr_code,
+                          gradient: [Colors.blue, Colors.deepPurple],
+                        );
+                      } else if (index == 1) {
+                        return buildResultCard(
+                          textSize: 40,
+                          title: "Unit & Location Price",
+                          subtitle: showLocationPrice ? "Location Price" : "Unit Price",
+                          value: showLocationPrice ? locationPrice : unitPrice,
+                          icon: Icons.price_change,
+                          gradient: [Colors.teal, Colors.greenAccent],
+                        );
+                      }
+                      return (
+                      const SizedBox(width: 0, height: 0,)
                       );
                     },
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Barcode Input
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 166, 0, 162),
-                        Color.fromARGB(255, 135, 18, 255),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: barcodeController,
-                          focusNode: _barcodeFocusNode,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: const InputDecoration(
-                            labelText: 'Enter Barcode',
-                            labelStyle: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                          onChanged: (value) {
-                            // Process the scanned value
-                            searchItem(value.trim());
-
-                            // Clear the TextField after processing
-                            clearBarcode();
-                          },
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          searchItem(barcodeController.text.trim());
-                        },
-                        child: const Text(
-                          "Search",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Results Grid
-              GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount, // 1 in portrait, 2 in landscape
-                  crossAxisSpacing: 8.0,        // Spacing between items horizontally
-                  mainAxisSpacing: 8.0,         // Spacing between items vertically
-                  childAspectRatio: 2,       // Adjust card proportions
-                ),
-                shrinkWrap: true,                // Allows GridView to adjust to its children
-                itemCount: 2,                    // Update this based on the number of cards you have
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return buildResultCard(
-                      textSize: 12,
-                      title: "Barcode & Description",
-                      subtitle: "Barcode: $barcode",
-                      value: description,
-                      icon: Icons.qr_code,
-                      gradient: [Colors.blue, Colors.deepPurple],
-                    );
-                  } else if (index == 1) {
-                    return buildResultCard(
-                      textSize: 26,
-                      title: "Unit & Location Price",
-                      subtitle: showLocationPrice ? "Location Price" : "Unit Price",
-                      value: showLocationPrice ? locationPrice : unitPrice,
-                      icon: Icons.price_change,
-                      gradient: [Colors.teal, Colors.greenAccent],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ),
       ),
