@@ -13,13 +13,26 @@ Future<void> showPasswordPrompt(BuildContext context) async {
     context: context,
     barrierDismissible: false, // Prevent closing by tapping outside
     builder: (BuildContext context) {
+      // Use MediaQuery to get the screen size
+      double screenWidth = MediaQuery.of(context).size.width;
+      double screenHeight = MediaQuery.of(context).size.height;
+
+      // Set the dialog width limit for large screens
+      double dialogWidth = screenWidth > 600 ? screenWidth * 0.6 : screenWidth * 0.8;
+
+      // Adjust font size and padding based on screen size
+      double titleFontSize = screenWidth > 600 ? 30 : 24;
+      double contentPadding = screenWidth > 600 ? 30 : 20;
+      double buttonFontSize = screenWidth > 600 ? 16 : 14;
+
       return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16), // Rounded corners for a softer look
         ),
         backgroundColor: Colors.transparent, // Transparent background for custom decorations
         child: Container(
-          padding: const EdgeInsets.all(20),
+          width: dialogWidth, // Control the dialog width dynamically
+          padding: EdgeInsets.all(contentPadding),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Colors.purple, Colors.deepPurpleAccent],
@@ -32,16 +45,16 @@ Future<void> showPasswordPrompt(BuildContext context) async {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               // Title
-              const Text(
+              Text(
                 'Enter Password',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: contentPadding),
 
               // Password input field
               TextField(
@@ -60,7 +73,7 @@ Future<void> showPasswordPrompt(BuildContext context) async {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: contentPadding),
 
               // Buttons (Cancel & Submit)
               Row(
@@ -75,10 +88,13 @@ Future<void> showPasswordPrompt(BuildContext context) async {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: screenHeight > 600 ? 16 : 12,
+                          horizontal: screenWidth > 600 ? 40 : 20),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Cancel',
-                      style:  TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: buttonFontSize),
                     ),
                   ),
                   ElevatedButton(
@@ -107,10 +123,13 @@ Future<void> showPasswordPrompt(BuildContext context) async {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: screenHeight > 600 ? 16 : 12,
+                          horizontal: screenWidth > 600 ? 40 : 20),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Submit',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: buttonFontSize),
                     ),
                   ),
                 ],
