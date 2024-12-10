@@ -19,7 +19,7 @@ Future<void> showPasswordPrompt(BuildContext context) async {
         ),
         backgroundColor: Colors.transparent, // Transparent background for custom decorations
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Colors.purple, Colors.deepPurpleAccent],
@@ -108,7 +108,7 @@ Future<void> showPasswordPrompt(BuildContext context) async {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Submit',
                       style: TextStyle(color: Colors.white),
                     ),
