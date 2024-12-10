@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
 import 'configuration_screen.dart'; // Import your configuration screen
+import 'package:pricechecker/password.dart';
 
 void main() {
   runApp(const MyApp());
@@ -169,12 +170,9 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                     IconButton(
                       icon: const Icon(Icons.settings, color: Colors.white), // Add settings icon
                       onPressed: () {
-                        // Navigate to configuration screen
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const DatabaseConfigScreen()),
-                        );
-                      },
+                          // Show password prompt before opening settings
+                          showPasswordPrompt(context);
+                        },
                     ),
                   ],
                 ),
