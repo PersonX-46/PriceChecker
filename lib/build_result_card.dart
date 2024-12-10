@@ -5,24 +5,22 @@ Widget buildResultCard({
   required String subtitle,
   required String value,
   required IconData icon,
-  required double textSize,
+  required int textSize, // You pass the textSize from the parent widget here
   required List<Color> gradient,
 }) {
   return LayoutBuilder(
     builder: (context, constraints) {
-      // Limit icon size to a maximum value to avoid overflow
-      double iconSize = constraints.maxWidth * 0.2; // Slightly smaller for better balance
+      // Your existing code remains unchanged
 
-      double textSize = constraints.maxWidth > 600 ? 24 : 18; // Adjust text size for readability
-      double valueSize = constraints.maxWidth > 600 ? 32 : 18;
-      double padding = constraints.maxWidth > 600 ? 16 : 12; // Adjust padding
+      double fontsize = constraints.maxWidth > 600 ? 24 : 18; // Adjust text size for readability
+      double iconSize = constraints.maxWidth * 0.2; // Icon size based on layout constraints
+      double padding = constraints.maxWidth > 600 ? 16 : 12; // Adjust padding based on width
 
       return Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18), // Round corners for a modern look
+          borderRadius: BorderRadius.circular(18),
         ),
-
-        elevation: 6, // Increased elevation for a shadow effect
+        elevation: 6,
         margin: EdgeInsets.symmetric(vertical: constraints.maxWidth > 300 ? 12 : 8),
         child: Container(
           decoration: BoxDecoration(
@@ -31,18 +29,17 @@ Widget buildResultCard({
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(18), // Rounded corners match the card
+            borderRadius: BorderRadius.circular(18),
           ),
           child: Padding(
             padding: EdgeInsets.all(padding),
             child: Column(
               children: [
-                // Icon and Title aligned at the top-left corner
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: iconSize, // Fixed size to ensure it stays within bounds
+                      width: iconSize,
                       height: iconSize,
                       child: Icon(
                         icon,
@@ -50,48 +47,44 @@ Widget buildResultCard({
                         size: iconSize,
                       ),
                     ),
-                    const SizedBox(width: 12), // Spacing between the icon and text
+                    const SizedBox(width: 12),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
                           style: TextStyle(
-                            fontSize: textSize,
+                            fontSize: fontsize, // Use the passed textSize here
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            letterSpacing: 1.2, // Slightly spaced out for a modern feel
+                            letterSpacing: 1.2,
                           ),
                         ),
                         Text(
                           subtitle,
-                          textAlign: TextAlign.justify,
                           style: TextStyle(
-                            fontSize: textSize * 0.7,
+                            fontSize: fontsize * 0.7, // Adjust subtitle size
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            letterSpacing: 1.2, // Slightly spaced out for a modern feel
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ],
                     )
                   ],
                 ),
-                const SizedBox(height: 16), // Space between title and value
-
-                // Value in the center
+                const SizedBox(height: 16),
                 Center(
                   child: Text(
                     value,
                     style: TextStyle(
-                      fontSize: valueSize + textSize,
+                      fontSize: textSize.toDouble(),
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start, // Ensures text is centered
+                    textAlign: TextAlign.start,
                   ),
                 ),
               ],
@@ -102,4 +95,5 @@ Widget buildResultCard({
     },
   );
 }
+
 
