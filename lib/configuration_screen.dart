@@ -9,7 +9,6 @@ class DatabaseConfigScreen extends StatefulWidget {
 }
 
 class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
-
   final TextEditingController serverController = TextEditingController();
   final TextEditingController databaseController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
@@ -19,7 +18,6 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadConfig();
   }
@@ -34,7 +32,6 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
       passwordController.text = prefs.getString('password') ?? "NULL";
       portController.text = prefs.getString('port') ?? "NULL";
       showLocationPrice = prefs.getBool('showLocationPrice') ?? false;
-      
     });
   }
 
@@ -45,115 +42,164 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
     await prefs.setString("username", usernameController.text.trim());
     await prefs.setString('password', passwordController.text.trim());
     await prefs.setString('port', portController.text.trim());
-    await prefs.setBool("showLocationPrice",  showLocationPrice);
+    await prefs.setBool("showLocationPrice", showLocationPrice);
 
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Configuration saved successfully!")
-    ));
+        content: Text("Configuration saved successfully!")));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Database Configuration'),),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           final containerWidth = isLandscape
-            ? constraints.maxWidth * 0.5
-            : constraints.maxWidth * 0.8;
+              ? constraints.maxWidth * 0.5
+              : constraints.maxWidth * 0.8;
+          double screenWidth = MediaQuery.of(context).size.width;
+          bool isSmallScreen = screenWidth < 600;
+          Orientation orientation = MediaQuery.of(context).orientation;
 
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Container(
-                width: containerWidth,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.all(16),
+          return Container(
+            color: Colors.black,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: SafeArea(
                 child: Column(
                   children: [
-                    const Text(
-                      "Enter Database Configuration",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: serverController,
-                      decoration: const InputDecoration(
-                        labelText: 'Server Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: databaseController,
-                      decoration: const InputDecoration(
-                        labelText: 'Database Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: portController,
-                      decoration: const InputDecoration(
-                        labelText: 'Port',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 16,),
-                    Checkbox(
-                      value: showLocationPrice, // Current state of the checkbox
-                      onChanged: (bool? newValue) {
-                        setState(() {
-                          showLocationPrice = newValue!; // Update the state
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(constraints.maxWidth * 0.5, 50),
-                      ),
-                      onPressed: saveConfig,
-                      child: const Text(
-                        'Save Configuration',
-                        style: TextStyle(
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Price Checker",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 24 : 32,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Container(
+                          width: containerWidth,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.blueGrey.shade800, Colors.deepPurple.shade600],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black45,
+                                blurRadius: 8,
+                                offset: Offset(4, 4),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                "Enter Database Configuration",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildTextField(serverController, 'Server Name'),
+                              const SizedBox(height: 16),
+                              _buildTextField(databaseController, 'Database Name'),
+                              const SizedBox(height: 16),
+                              _buildTextField(usernameController, 'Username'),
+                              const SizedBox(height: 16),
+                              _buildTextField(passwordController, 'Password'),
+                              const SizedBox(height: 16),
+                              _buildTextField(portController, 'Port'),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: showLocationPrice,
+                                    onChanged: (bool? newValue) {
+                                      setState(() {
+                                        showLocationPrice = newValue!;
+                                      });
+                                    },
+                                    activeColor: Colors.deepPurple,
+                                  ),
+                                  const Text(
+                                    'Show Location Price',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 32),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(constraints.maxWidth * 0.5, 50), backgroundColor: Colors.deepPurpleAccent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 8,
+                                ),
+                                onPressed: saveConfig,
+                                child: const Text(
+                                  'Save Configuration',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            ),
+            )
           );
-        }
+        },
       ),
     );
   }
 
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white),
+        filled: true,
+        fillColor: Colors.black45,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.deepPurpleAccent),
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      style: const TextStyle(color: Colors.white),
+    );
+  }
 }
