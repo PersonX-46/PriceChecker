@@ -71,9 +71,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                   isLandscape ? CrossAxisAlignment.start : CrossAxisAlignment.center,
                   children: [
                     Row(
-                      mainAxisAlignment: isLandscape
-                          ? MainAxisAlignment.start
-                          : MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Image.asset(
                           'assets/images/logo.png',
