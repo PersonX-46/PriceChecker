@@ -55,26 +55,31 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           final containerWidth = isLandscape
-              ? constraints.maxWidth * 0.5
+              ? constraints.maxWidth * 0.4
               : constraints.maxWidth * 0.8;
+
           double screenWidth = MediaQuery.of(context).size.width;
           bool isSmallScreen = screenWidth < 600;
-          Orientation orientation = MediaQuery.of(context).orientation;
 
           return Container(
             color: Colors.black,
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: SafeArea(
                 child: Column(
+                  crossAxisAlignment:
+                  isLandscape ? CrossAxisAlignment.start : CrossAxisAlignment.center,
                   children: [
                     Row(
+                      mainAxisAlignment: isLandscape
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.center,
                       children: [
                         Image.asset(
                           'assets/images/logo.png',
-                          width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
+                          width: isSmallScreen ? screenWidth * 0.15 : screenWidth * 0.1,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8), // Adjusted spacing
                         Text(
                           "Price Checker",
                           style: TextStyle(
@@ -85,86 +90,94 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                         ),
                       ],
                     ),
-                    Center(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Container(
-                          width: containerWidth,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.blueGrey.shade800, Colors.deepPurple.shade600],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black45,
-                                blurRadius: 8,
-                                offset: Offset(4, 4),
-                              ),
-                            ],
-                          ),
+                    Expanded(
+                      child: Center(
+                        child: SingleChildScrollView(
                           padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                "Enter Database Configuration",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 20),
-                              _buildTextField(serverController, 'Server Name'),
-                              const SizedBox(height: 16),
-                              _buildTextField(databaseController, 'Database Name'),
-                              const SizedBox(height: 16),
-                              _buildTextField(usernameController, 'Username'),
-                              const SizedBox(height: 16),
-                              _buildTextField(passwordController, 'Password'),
-                              const SizedBox(height: 16),
-                              _buildTextField(portController, 'Port'),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Checkbox(
-                                    value: showLocationPrice,
-                                    onChanged: (bool? newValue) {
-                                      setState(() {
-                                        showLocationPrice = newValue!;
-                                      });
-                                    },
-                                    activeColor: Colors.deepPurple,
-                                  ),
-                                  const Text(
-                                    'Show Location Price',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                          child: Container(
+                            width: containerWidth,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.blueGrey.shade800,
+                                  Colors.deepPurple.shade600
                                 ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                              const SizedBox(height: 32),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(constraints.maxWidth * 0.5, 50), backgroundColor: Colors.deepPurpleAccent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 8,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black45,
+                                  blurRadius: 8,
+                                  offset: Offset(4, 4),
                                 ),
-                                onPressed: saveConfig,
-                                child: const Text(
-                                  'Save Configuration',
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Enter Database Configuration",
                                   style: TextStyle(
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
                                     color: Colors.white,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 20),
+                                _buildTextField(serverController, 'Server Name'),
+                                const SizedBox(height: 16),
+                                _buildTextField(databaseController, 'Database Name'),
+                                const SizedBox(height: 16),
+                                _buildTextField(usernameController, 'Username'),
+                                const SizedBox(height: 16),
+                                _buildTextField(passwordController, 'Password'),
+                                const SizedBox(height: 16),
+                                _buildTextField(portController, 'Port'),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                      value: showLocationPrice,
+                                      onChanged: (bool? newValue) {
+                                        setState(() {
+                                          showLocationPrice = newValue!;
+                                        });
+                                      },
+                                      activeColor: Colors.deepPurple,
+                                    ),
+                                    const Text(
+                                      'Show Location Price',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 32),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize:
+                                    Size(constraints.maxWidth * 0.5, 50),
+                                    backgroundColor: Colors.deepPurpleAccent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 8,
+                                  ),
+                                  onPressed: saveConfig,
+                                  child: const Text(
+                                    'Save Configuration',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -172,7 +185,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                   ],
                 ),
               ),
-            )
+            ),
           );
         },
       ),
