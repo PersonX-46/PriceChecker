@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
-import 'configuration_screen.dart'; // Import your configuration screen
 import 'package:pricechecker/password.dart';
 
 void main() {
@@ -150,33 +149,41 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/logo.png',
-                          width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.2,
-                        ),
-                        const SizedBox(width: 10,),
-                        Text(
-                          "Price Checker",
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 24 : 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: screenWidth * 0.7,
+                      ), // Limit the width of the container
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min, // Ensures the Row only takes the space it needs
+                        children: [
+                          Image.asset(
+                            'assets/images/logo.png',
+                            width: isSmallScreen ? screenWidth * 0.2 : screenWidth * 0.1, // Adjust size based on screen
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8), // Fixed spacing between logo and text
+                          Flexible(
+                            child: Text(
+                              "Price Checker",
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 24 : 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis, // Ensures the text doesn't overflow
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.settings, color: Colors.white), // Add settings icon
+                      icon: Icon(Icons.settings, color: Colors.white, size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,),
                       onPressed: () {
-                          // Show password prompt before opening settings
-                          showPasswordPrompt(context);
-                        },
+                        showPasswordPrompt(context);
+                      },
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
 
                 // Barcode Input
                 Card(
