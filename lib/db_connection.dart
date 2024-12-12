@@ -16,7 +16,6 @@ class DBConnection {
 
   DBConnection() {
     loadConfig();
-    initConnection();
   }
 
   void loadConfig() async {
@@ -38,6 +37,11 @@ class DBConnection {
       password: password
     );
   }
+
+  bool isConnected() {
+    return _connection.isConnected;
+  }
+
 
   Future<void> closeConnection() async {
     if (_connection.isConnected) {
