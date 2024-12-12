@@ -284,7 +284,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         );
                       } else if (index == 1) {
                         return buildResultCard(
-                          textSize: 40,
+                          textSize: 50,
                           title: "Unit & Location Price",
                           subtitle: showLocationPrice ? "Location Price" : "Unit Price",
                           value: showLocationPrice ? locationPrice : unitPrice,
