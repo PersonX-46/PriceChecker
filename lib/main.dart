@@ -175,12 +175,27 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.settings, color: Colors.white, size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,),
-                      onPressed: () {
-                        showPasswordPrompt(context);
-                      },
-                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.restart_alt,
+                            color: Colors.white,
+                            size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,
+                          ),
+                          onPressed: () {
+                            initDatabase();
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.settings, color: Colors.white, size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,),
+                          onPressed: () {
+                            showPasswordPrompt(context);
+                          },
+                        ),
+                      ],
+                    )
                   ],
                 ),
                 const SizedBox(height: 40),
