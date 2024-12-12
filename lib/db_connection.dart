@@ -1,4 +1,3 @@
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mssql_connection/mssql_connection.dart';
 import 'dart:convert';
 
@@ -11,35 +10,30 @@ class DBConnection {
   static String username = "test";
   static String password = "test";
   static String port = '50602';
+  static String location = "HQ";
 
   late MssqlConnection _connection;
+  bool _isconnected = false;
 
   DBConnection() {
-    loadConfig();
+    initConnection();
   }
-
-  void loadConfig() async {
+  
+  Future<bool> initConnection() async {
     final prefs = await SharedPreferences.getInstance();
     server = prefs.getString('server') ?? server;
     databaseName = prefs.getString('database') ?? databaseName;
     username = prefs.getString('username') ?? username;
     password = prefs.getString('password') ?? password;
     port = prefs.getString('port') ?? port;
-  }
-  
-  Future<void> initConnection() async {
     _connection = MssqlConnection.getInstance();
-    await _connection.connect(
+    return await _connection.connect(
       ip: server,
       port: port,
       databaseName: databaseName,
       username: username,
       password: password
     );
-  }
-
-  bool isConnected() {
-    return _connection.isConnected;
   }
 
 
@@ -76,14 +70,10 @@ class DBConnection {
     String results = await _connection.getData(query);
     List<dynamic> result = jsonDecode(results); // Decode JSON as List<dynamic>
 
-    if (result is List) {
-      // Safely cast the result to List<Map<String, dynamic>>
-      _items = List<Map<String, dynamic>>.from(result);
-      _items.sort((a, b) => (a['Barcode'] ?? '').compareTo((b['Barcode'] ?? '')));
-    } else {
-      throw Exception("Invalid data format: Expected a list of maps");
+    // Safely cast the result to List<Map<String, dynamic>>
+    _items = List<Map<String, dynamic>>.from(result);
+    _items.sort((a, b) => (a['Barcode'] ?? '').compareTo((b['Barcode'] ?? '')));
     }
-  }
 
 
   Map<String, dynamic>? findItemByBarcode(String barcode) {
