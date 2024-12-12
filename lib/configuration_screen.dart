@@ -55,7 +55,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           final containerWidth = isLandscape
-              ? constraints.maxWidth * 0.4
+              ? constraints.maxWidth * 0.8
               : constraints.maxWidth * 0.8;
 
           double screenWidth = MediaQuery.of(context).size.width;
@@ -114,7 +114,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                             ),
                             padding: const EdgeInsets.all(16),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const Text(
                                   "Enter Database Configuration",
@@ -125,17 +125,31 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 20),
-                                _buildTextField(serverController, 'Server Name'),
-                                const SizedBox(height: 16),
-                                _buildTextField(databaseController, 'Database Name'),
-                                const SizedBox(height: 16),
-                                _buildTextField(usernameController, 'Username'),
-                                const SizedBox(height: 16),
-                                _buildTextField(passwordController, 'Password'),
-                                const SizedBox(height: 16),
-                                _buildTextField(portController, 'Port'),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 30,),
+                                GridView.builder(
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: isLandscape ? 2 : 1,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    childAspectRatio: 5,
+                                  ),
+                                  shrinkWrap: true,
+                                  itemCount: 5,
+                                  itemBuilder: (context, index){
+                                    if (index == 0){
+                                      return _buildTextField(serverController, 'Server Name');
+                                    } else if (index == 1){
+                                      return _buildTextField(databaseController, 'Database Name');
+                                    }else if (index == 2){
+                                      return _buildTextField(usernameController, 'Username');
+                                    }else if (index == 3){
+                                      return _buildTextField(passwordController, 'Password');
+                                    }else if (index == 4){
+                                      return _buildTextField(portController, 'Port');
+                                    }
+                                    return null;
+                                  },
+                                ),
                                 Row(
                                   children: [
                                     Checkbox(
@@ -154,26 +168,28 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 32),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    minimumSize:
-                                    Size(constraints.maxWidth * 0.5, 50),
-                                    backgroundColor: Colors.deepPurpleAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                Center(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize:
+                                      Size(constraints.maxWidth * 0.5, 50),
+                                      backgroundColor: Colors.deepPurpleAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 8,
                                     ),
-                                    elevation: 8,
-                                  ),
-                                  onPressed: saveConfig,
-                                  child: const Text(
-                                    'Save Configuration',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Colors.white,
+                                    onPressed: saveConfig,
+                                    child: const Text(
+                                      'Save Configuration',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                )
                               ],
                             ),
                           ),
