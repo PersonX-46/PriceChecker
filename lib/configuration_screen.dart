@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pricechecker/db_connection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseConfigScreen extends StatefulWidget {
@@ -15,11 +17,13 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController portController = TextEditingController();
   bool showLocationPrice = false;
+  late DBConnection db;
 
   @override
   void initState() {
-    super.initState();
     loadConfig();
+    super.initState();
+    db = DBConnection();
   }
 
   Future<void> loadConfig() async {
@@ -33,6 +37,30 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
       portController.text = prefs.getString('port') ?? "NULL";
       showLocationPrice = prefs.getBool('showLocationPrice') ?? false;
     });
+  }
+
+  void initConnection() async {
+    try {
+      db.loadConfig();
+      await db.initConnection();
+      Fluttertoast.showToast(
+        msg: "Database connected successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error connecting database",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   Future<void> saveConfig() async {
@@ -55,8 +83,8 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           final containerWidth = isLandscape
-              ? constraints.maxWidth * 0.8
-              : constraints.maxWidth * 0.8;
+              ? constraints.maxWidth * 0.4
+              : constraints.maxWidth * 1;
 
           double screenWidth = MediaQuery.of(context).size.width;
           bool isSmallScreen = screenWidth < 600;
@@ -169,26 +197,51 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                 ),
                                 const SizedBox(height: 32),
                                 Center(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize:
-                                      Size(constraints.maxWidth * 0.5, 50),
-                                      backgroundColor: Colors.deepPurpleAccent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.deepPurpleAccent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          elevation: 8,
+                                        ),
+                                        onPressed: saveConfig,
+                                        child: const Text(
+                                          'Save Configuration',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                      elevation: 8,
-                                    ),
-                                    onPressed: saveConfig,
-                                    child: const Text(
-                                      'Save Configuration',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Colors.white,
+                                      const SizedBox(width: 8,),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.deepPurpleAccent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          elevation: 8,
+                                        ),
+                                        onPressed: () {
+                                          initConnection();
+                                        },
+                                        child: const Text(
+                                          'Test Database',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    ],
+                                  )
                                 )
                               ],
                             ),
