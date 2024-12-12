@@ -23,7 +23,6 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
   void initState() {
     loadConfig();
     super.initState();
-    db = DBConnection();
   }
 
   Future<void> loadConfig() async {
@@ -40,17 +39,29 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
   }
 
   void initConnection() async {
+
     try {
-      db.loadConfig();
-      await db.initConnection();
-      Fluttertoast.showToast(
-        msg: "Database connected successfully!",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      db = DBConnection();
+      if (await db.initConnection()){
+        Fluttertoast.showToast(
+          msg: "Database connected successfully!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }else{
+        Fluttertoast.showToast(
+          msg: "Database connection unsuccessful!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+
     }catch (e) {
       Fluttertoast.showToast(
         msg: "Error connecting database",
@@ -60,6 +71,8 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
+    }finally {
+      db.closeConnection();
     }
   }
 
