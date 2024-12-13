@@ -9,7 +9,7 @@ class TableScreen extends StatefulWidget {
 }
 
 class _TableScreenState extends State<TableScreen> {
-  final DBConnection _dbConnection = DBConnection(); // Initialize DBConnection
+  final DBConnection _dbConnection = DBConnection();
   List<Map<String, dynamic>> _items = [];
   List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = true;
@@ -26,8 +26,8 @@ class _TableScreenState extends State<TableScreen> {
       await _dbConnection.initConnection();
       await _dbConnection.fetchAllItems();
       setState(() {
-        _items = _dbConnection.getFetchedItems() ?? [];
-        _filteredItems = _items.take(50).toList(); // Limit to first 50 items
+        _items = _dbConnection.getFetchedItems();
+        _filteredItems = _items.take(50).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -40,23 +40,24 @@ class _TableScreenState extends State<TableScreen> {
 
   void _filterItemsByDescription(String query) {
     setState(() {
-      final filtered = _items
+      _filteredItems = _items
           .where((item) =>
           (item['Description'] ?? '')
               .toString()
               .toLowerCase()
               .contains(query.toLowerCase()))
+          .take(50)
           .toList();
-      _filteredItems = filtered.take(50).toList(); // Apply limit to filtered results
     });
   }
 
   void _getItemByBarcode(String barcode) {
     setState(() {
-      final foundItems = _items
-          .where((item) => item['Barcode']?.toString() == barcode)
+      _filteredItems = _items
+          .where((item) =>
+      (item['Barcode'] ?? '').toString().toLowerCase() == barcode.toLowerCase())
+          .take(50)
           .toList();
-      _filteredItems = foundItems.take(50).toList();
     });
   }
 
@@ -64,36 +65,35 @@ class _TableScreenState extends State<TableScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSmallScreen = screenWidth < 600;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.black87, Colors.deepPurple],
+            colors: [Colors.black87, Colors.black],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
         child: _isLoading
             ? const Center(
-          child: CircularProgressIndicator(
-            color: Colors.white,
-          ),
+          child: CircularProgressIndicator(color: Colors.white),
         )
             : SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                // Logo and Title Section
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Image.asset(
                       'assets/images/logo.png',
                       width: isSmallScreen
                           ? screenWidth * 0.2
-                          : screenWidth * 0.1, // Adjust size based on screen
+                          : screenWidth * 0.1,
                     ),
-                    const SizedBox(width: 8), // Fixed spacing
+                    const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         "Price Checker",
@@ -102,31 +102,42 @@ class _TableScreenState extends State<TableScreen> {
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
-                        overflow: TextOverflow.ellipsis, // Prevent overflow
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const SizedBox(height: 20),
+
+                // Search Section
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    gradient: const LinearGradient(
+                      colors: [Colors.blue, Colors.deepPurple],
+                    ),
+                  ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: TextField(
                           controller: searchController,
-                          decoration: InputDecoration(
-                            labelText: "Search by Barcode",
-                            labelStyle: const TextStyle(color: Colors.white),
-                            filled: true,
-                            fillColor: Colors.deepPurple[900],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            prefixIcon:
-                            const Icon(Icons.search, color: Colors.white),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Enter Barcode',
+                            labelStyle: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            prefixIcon: Icon(Icons.search, color: Colors.white),
+                            border: InputBorder.none,
+                          ),
                           onChanged: _getItemByBarcode,
                         ),
                       ),
@@ -146,6 +157,9 @@ class _TableScreenState extends State<TableScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Table Section
                 Expanded(
                   child: _filteredItems.isEmpty
                       ? const Center(
@@ -185,23 +199,28 @@ class _TableScreenState extends State<TableScreen> {
                           return DataRow(cells: [
                             DataCell(Text(
                               item['ItemCode'] ?? "",
-                              style: const TextStyle(color: Colors.white),
+                              style:
+                              const TextStyle(color: Colors.white),
                             )),
                             DataCell(Text(
                               item['Description'] ?? "",
-                              style: const TextStyle(color: Colors.white),
+                              style:
+                              const TextStyle(color: Colors.white),
                             )),
                             DataCell(Text(
                               item['Barcode'] ?? "",
-                              style: const TextStyle(color: Colors.white),
+                              style:
+                              const TextStyle(color: Colors.white),
                             )),
                             DataCell(Text(
                               item['Location'] ?? "",
-                              style: const TextStyle(color: Colors.white),
+                              style:
+                              const TextStyle(color: Colors.white),
                             )),
                             DataCell(Text(
                               item['PosUnitPrice']?.toString() ?? "",
-                              style: const TextStyle(color: Colors.white),
+                              style:
+                              const TextStyle(color: Colors.white),
                             )),
                           ]);
                         }).toList(),
@@ -211,7 +230,7 @@ class _TableScreenState extends State<TableScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ),
       ),
     );
