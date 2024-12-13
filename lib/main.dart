@@ -251,6 +251,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                             ),
                             decoration: const InputDecoration(
                               labelText: 'Enter Barcode',
+                              prefixIcon: Icon(Icons.search, color: Colors.white),
                               labelStyle: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
@@ -290,7 +291,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                       mainAxisSpacing: 8.0,         // Spacing between items vertically
                       childAspectRatio: 2,       // Adjust card proportions
                     ),
-                    shrinkWrap: true,                // Allows GridView to adjust to its children
+                    shrinkWrap: false,                // Allows GridView to adjust to its children
                     itemCount: 2,                    // Update this based on the number of cards you have
                     itemBuilder: (context, index) {
                       if (index == 0) {
