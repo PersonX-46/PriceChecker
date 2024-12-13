@@ -14,6 +14,8 @@ class _TableScreenState extends State<TableScreen> {
   List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = true;
   String _searchQuery = "";
+  bool _searchByDescription = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -27,7 +29,7 @@ class _TableScreenState extends State<TableScreen> {
       await _dbConnection.fetchAllItems();
       setState(() {
         _items = _dbConnection.getFetchedItems();
-        _filteredItems = _items.take(100).toList(); // Limit to first 100 items
+        _filteredItems = _items.take(50).toList(); // Limit to first 50 items
         _isLoading = false;
       });
     } catch (e) {
@@ -38,18 +40,23 @@ class _TableScreenState extends State<TableScreen> {
     }
   }
 
-  void _filterItems(String query) {
+  void _filterItemsByDescription(String query) {
     setState(() {
-      _searchQuery = query;
       final filtered = _items
           .where((item) =>
-      item['ItemCode'].toString().contains(query) ||
-          item['Description'].toString().toLowerCase().contains(query.toLowerCase()) ||
-          item['Barcode'].toString().contains(query))
+          item['Description'].toString().toLowerCase().contains(query.toLowerCase()))
           .toList();
-      _filteredItems = filtered.take(100).toList(); // Apply limit to filtered results
+      _filteredItems = filtered.take(50).toList(); // Apply limit to filtered results
     });
   }
+
+  void _getItemByBarcode(String barcode) {
+    setState(() {
+      final foundItems = _items.where((item) => item['Barcode'] == barcode).toList();
+      _filteredItems = foundItems.take(50).toList();
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,20 +83,42 @@ class _TableScreenState extends State<TableScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: "Search",
-                  labelStyle: const TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.deepPurple[900],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide.none,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        labelText: "Search",
+                        labelStyle: const TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.deepPurple[900],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      onChanged: _getItemByBarcode,
+                    ),
                   ),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
-                ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: _filterItems, // Update search query
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      _filterItemsByDescription(searchController.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _searchByDescription
+                          ? Colors.deepPurple[700]
+                          : Colors.deepPurple[300],
+                    ),
+                    child: const Text(
+                      "Search",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -99,19 +128,34 @@ class _TableScreenState extends State<TableScreen> {
                   scrollDirection: Axis.vertical, // Enable vertical scrolling
                   child: DataTable(
                     columns: const [
-                      DataColumn(label: Text("Item Code", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Description", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Barcode", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Location", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Price", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Item Code",
+                              style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Description",
+                              style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Barcode",
+                              style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Location",
+                              style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Price",
+                              style: TextStyle(color: Colors.white))),
                     ],
                     rows: _filteredItems.map((item) {
                       return DataRow(cells: [
-                        DataCell(Text(item['ItemCode'] ?? "", style: const TextStyle(color: Colors.white))),
-                        DataCell(Text(item['Description'] ?? "", style: const TextStyle(color: Colors.white))),
-                        DataCell(Text(item['Barcode'] ?? "", style: const TextStyle(color: Colors.white))),
-                        DataCell(Text(item['Location'] ?? "", style: const TextStyle(color: Colors.white))),
-                        DataCell(Text(item['PosUnitPrice'].toString(), style: const TextStyle(color: Colors.white))),
+                        DataCell(Text(item['ItemCode'] ?? "",
+                            style: const TextStyle(color: Colors.white))),
+                        DataCell(Text(item['Description'] ?? "",
+                            style: const TextStyle(color: Colors.white))),
+                        DataCell(Text(item['Barcode'] ?? "",
+                            style: const TextStyle(color: Colors.white))),
+                        DataCell(Text(item['Location'] ?? "",
+                            style: const TextStyle(color: Colors.white))),
+                        DataCell(Text(item['PosUnitPrice'].toString(),
+                            style: const TextStyle(color: Colors.white))),
                       ]);
                     }).toList(),
                   ),
