@@ -70,11 +70,27 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
 
   Future<void> initDatabase() async {
     try {
+      Fluttertoast.showToast(
+        msg: "Connecting to the database...",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       await db.initConnection();
       await db.fetchAllItems();
+      Fluttertoast.showToast(
+        msg: "Connection successful!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "mmm$e",
+        msg: "Error: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
