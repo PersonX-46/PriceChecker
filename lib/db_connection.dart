@@ -73,8 +73,11 @@ class DBConnection {
     // Safely cast the result to List<Map<String, dynamic>>
     _items = List<Map<String, dynamic>>.from(result);
     _items.sort((a, b) => (a['Barcode'] ?? '').compareTo((b['Barcode'] ?? '')));
-    }
+  }
 
+  List<Map<String, dynamic>> getFetchedItems() {
+    return _items;
+  }
 
   Map<String, dynamic>? findItemByBarcode(String barcode) {
     int left = 0;
