@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pricechecker/db_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:pricechecker/table_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
@@ -201,7 +202,10 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                             size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,
                           ),
                           onPressed: () {
-                            initDatabase();
+                            //initDatabase();
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => const TableScreen()
+                            ));
                           },
                         ),
                         IconButton(
