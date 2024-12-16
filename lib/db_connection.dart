@@ -13,7 +13,6 @@ class DBConnection {
   static String location = "HQ";
 
   late MssqlConnection _connection;
-  bool _isconnected = false;
 
   DBConnection() {
     initConnection();
@@ -26,6 +25,7 @@ class DBConnection {
     username = prefs.getString('username') ?? username;
     password = prefs.getString('password') ?? password;
     port = prefs.getString('port') ?? port;
+    location = prefs.getString('location') ?? location;
     _connection = MssqlConnection.getInstance();
     return await _connection.connect(
       ip: server,
@@ -50,7 +50,7 @@ class DBConnection {
       throw Exception("Database connection is not initialized");
     }
 
-    const query = """
+    String query = """
     WITH BaseItems AS (
           SELECT
               u.ItemCode,
@@ -62,7 +62,7 @@ class DBConnection {
               ISNULL(p.Price, u.Price) AS PosUnitPrice
           FROM dbo.ItemUOM u
           LEFT JOIN dbo.Item i ON u.ItemCode = i.ItemCode
-          LEFT JOIN dbo.PosPricePlan p ON u.ItemCode = p.ItemCode AND p.Location = 'HQ'
+          LEFT JOIN dbo.PosPricePlan p ON u.ItemCode = p.ItemCode AND p.Location = '$location'
       )
       SELECT * FROM BaseItems;
     """;
