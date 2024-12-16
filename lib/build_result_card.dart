@@ -48,47 +48,51 @@ Widget buildResultCard({
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: fontsize, // Use the passed textSize here
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.2,
+                    Expanded( // Ensures text adjusts to available space
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: fontsize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
                           ),
-                        ),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            fontSize: fontsize * 0.7, // Adjust subtitle size
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.2,
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: fontsize * 0.7,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
                           ),
-                        ),
-                      ],
-                    )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                Center(
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: textSize.toDouble(),
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                Flexible( // Prevents overflow by flexibly sizing the child
+                  child: Center(
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: textSize.toDouble(),
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
                   ),
                 ),
               ],
-            ),
+            )
           ),
         ),
       );
