@@ -111,9 +111,10 @@ class _TableScreenState extends State<TableScreen> {
 
                 // Search Section
                 Container(
+                  margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(50),
                     gradient: const LinearGradient(
                       colors: [Colors.blue, Colors.deepPurple],
                     ),
