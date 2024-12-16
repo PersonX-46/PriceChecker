@@ -202,6 +202,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                             size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,
                           ),
                           onPressed: () {
+                            loadConfig();
                             initDatabase();
                           },
                         ),
