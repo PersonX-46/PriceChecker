@@ -202,10 +202,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                             size: isSmallScreen ? screenWidth * 0.07 : screenWidth * 0.04,
                           ),
                           onPressed: () {
-                            //initDatabase();
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => const TableScreen()
-                            ));
+                            initDatabase();
                           },
                         ),
                         IconButton(
@@ -288,7 +285,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount, // 1 in portrait, 2 in landscape
                       crossAxisSpacing: 8.0,        // Spacing between items horizontally
-                      mainAxisSpacing: 8.0,         // Spacing between items vertically
+                      mainAxisSpacing: 8.0, // Spacing between items vertically
                       childAspectRatio: 2,       // Adjust card proportions
                     ),
                     shrinkWrap: false,                // Allows GridView to adjust to its children
