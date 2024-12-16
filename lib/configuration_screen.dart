@@ -17,6 +17,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController portController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
   bool showLocationPrice = false;
   late DBConnection db;
 
@@ -35,15 +36,15 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
       usernameController.text = prefs.getString('username') ?? 'NULL';
       passwordController.text = prefs.getString('password') ?? "NULL";
       portController.text = prefs.getString('port') ?? "NULL";
+      locationController.text = prefs.getString('location') ?? "HQ";
       showLocationPrice = prefs.getBool('showLocationPrice') ?? false;
     });
   }
 
   void initConnection() async {
-
     try {
       db = DBConnection();
-      if (await db.initConnection()){
+      if (await db.initConnection()) {
         Fluttertoast.showToast(
           msg: "Database connected successfully!",
           toastLength: Toast.LENGTH_SHORT,
@@ -52,7 +53,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
-      }else{
+      } else {
         Fluttertoast.showToast(
           msg: "Database connection unsuccessful!",
           toastLength: Toast.LENGTH_SHORT,
@@ -62,8 +63,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
           fontSize: 16.0,
         );
       }
-
-    }catch (e) {
+    } catch (e) {
       Fluttertoast.showToast(
         msg: "Error connecting database",
         toastLength: Toast.LENGTH_SHORT,
@@ -72,7 +72,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    }finally {
+    } finally {
       db.closeConnection();
     }
   }
@@ -85,6 +85,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
     await prefs.setString('password', passwordController.text.trim());
     await prefs.setString('port', portController.text.trim());
     await prefs.setBool("showLocationPrice", showLocationPrice);
+    await prefs.setString('location', locationController.text.trim());
 
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Configuration saved successfully!")));
@@ -100,7 +101,10 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
               ? constraints.maxWidth * 0.7
               : constraints.maxWidth * 1;
 
-          double screenWidth = MediaQuery.of(context).size.width;
+          double screenWidth = MediaQuery
+              .of(context)
+              .size
+              .width;
           bool isSmallScreen = screenWidth < 600;
 
           return Container(
@@ -110,14 +114,17 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
               child: SafeArea(
                 child: Column(
                   crossAxisAlignment:
-                  isLandscape ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                  isLandscape ? CrossAxisAlignment.start : CrossAxisAlignment
+                      .center,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Image.asset(
                           'assets/images/logo.png',
-                          width: isSmallScreen ? screenWidth * 0.15 : screenWidth * 0.1,
+                          width: isSmallScreen
+                              ? screenWidth * 0.15
+                              : screenWidth * 0.1,
                         ),
                         const SizedBox(width: 8), // Adjusted spacing
                         Text(
@@ -167,7 +174,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 10,),
+                                const SizedBox(height: 30,),
                                 GridView.builder(
                                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: isLandscape ? 2 : 1,
@@ -176,18 +183,32 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                     childAspectRatio: 5,
                                   ),
                                   shrinkWrap: true,
-                                  itemCount: 5,
-                                  itemBuilder: (context, index){
-                                    if (index == 0){
-                                      return _buildTextField(serverController, 'Server Name');
-                                    } else if (index == 1){
-                                      return _buildTextField(databaseController, 'Database Name');
-                                    }else if (index == 2){
-                                      return _buildTextField(usernameController, 'Username');
-                                    }else if (index == 3){
-                                      return _buildTextField(passwordController, 'Password');
-                                    }else if (index == 4){
-                                      return _buildTextField(portController, 'Port');
+                                  itemCount: 6,
+                                  itemBuilder: (context, index) {
+                                    if (index == 0) {
+                                      return _buildTextField(
+                                          serverController, 'Server Name',
+                                          Icons.cloud);
+                                    } else if (index == 1) {
+                                      return _buildTextField(
+                                          databaseController, 'Database Name',
+                                          Icons.storage);
+                                    } else if (index == 2) {
+                                      return _buildTextField(
+                                          usernameController, 'Username',
+                                          Icons.person);
+                                    } else if (index == 3) {
+                                      return _buildTextField(
+                                          passwordController, 'Password',
+                                          Icons.lock);
+                                    } else if (index == 4) {
+                                      return _buildTextField(
+                                          portController, 'Port',
+                                          Icons.network_cell);
+                                    } else if (index == 5) {
+                                      return _buildTextField(
+                                          locationController, "Location",
+                                          Icons.location_on);
                                     }
                                     return null;
                                   },
@@ -212,20 +233,27 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                 const SizedBox(height: 32),
                                 Center(
                                   child: Wrap(
-                                    spacing: 8, // Horizontal space between buttons
-                                    runSpacing: 8, // Vertical space between rows of buttons
-                                    alignment: WrapAlignment.center, // Align buttons in the center
+                                    spacing: 8,
+                                    // Horizontal space between buttons
+                                    runSpacing: 8,
+                                    // Vertical space between rows of buttons
+                                    alignment: WrapAlignment.center,
+                                    // Align buttons in the center
                                     children: [
-                                      ElevatedButton(
+                                      ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.deepPurpleAccent,
+                                          backgroundColor: Colors
+                                              .deepPurpleAccent,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                                12),
                                           ),
                                           elevation: 8,
                                         ),
+                                        icon: const Icon(
+                                          Icons.save, color: Colors.white,),
                                         onPressed: saveConfig,
-                                        child: const Text(
+                                        label: const Text(
                                           'Save Configuration',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -234,16 +262,21 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                           ),
                                         ),
                                       ),
-                                      ElevatedButton(
+                                      ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.deepPurpleAccent,
+                                          backgroundColor: Colors
+                                              .deepPurpleAccent,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                                12),
                                           ),
                                           elevation: 8,
                                         ),
+                                        icon: const Icon(
+                                          Icons.settings_ethernet,
+                                          color: Colors.white,),
                                         onPressed: initConnection,
-                                        child: const Text(
+                                        label: const Text(
                                           'Test Database',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -252,21 +285,26 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                           ),
                                         ),
                                       ),
-                                      ElevatedButton(
+                                      ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.deepPurpleAccent,
+                                          backgroundColor: Colors
+                                              .deepPurpleAccent,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                                12),
                                           ),
                                           elevation: 8,
                                         ),
                                         onPressed: () {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => const TableScreen()),
+                                            MaterialPageRoute(builder: (
+                                                context) => const TableScreen()),
                                           );
                                         },
-                                        child: const Text(
+                                        icon: const Icon(Icons.table_chart,
+                                          color: Colors.white,),
+                                        label: const Text(
                                           'View Table',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -294,10 +332,12 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.white),
         labelText: label,
         labelStyle: const TextStyle(color: Colors.white),
         filled: true,
