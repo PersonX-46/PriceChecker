@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pricechecker/db_connection.dart';
+import 'package:pricechecker/table_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseConfigScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
         builder: (context, constraints) {
           final isLandscape = constraints.maxWidth > constraints.maxHeight;
           final containerWidth = isLandscape
-              ? constraints.maxWidth * 0.4
+              ? constraints.maxWidth * 0.7
               : constraints.maxWidth * 1;
 
           double screenWidth = MediaQuery.of(context).size.width;
@@ -166,7 +167,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 30,),
+                                const SizedBox(height: 10,),
                                 GridView.builder(
                                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: isLandscape ? 2 : 1,
@@ -210,9 +211,10 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                 ),
                                 const SizedBox(height: 32),
                                 Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                  child: Wrap(
+                                    spacing: 8, // Horizontal space between buttons
+                                    runSpacing: 8, // Vertical space between rows of buttons
+                                    alignment: WrapAlignment.center, // Align buttons in the center
                                     children: [
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
@@ -232,7 +234,6 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 8,),
                                       ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.deepPurpleAccent,
@@ -241,9 +242,7 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                           ),
                                           elevation: 8,
                                         ),
-                                        onPressed: () {
-                                          initConnection();
-                                        },
+                                        onPressed: initConnection,
                                         child: const Text(
                                           'Test Database',
                                           style: TextStyle(
@@ -253,8 +252,31 @@ class _DatabaseConfigScreenState extends State<DatabaseConfigScreen> {
                                           ),
                                         ),
                                       ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.deepPurpleAccent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          elevation: 8,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const TableScreen()),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'View Table',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ],
-                                  )
+                                  ),
                                 )
                               ],
                             ),
