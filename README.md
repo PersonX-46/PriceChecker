@@ -1,6 +1,6 @@
 # pricechecker
 
-Price Checker for android pos system
+A new Flutter project.
 
 ## Getting Started
 
