@@ -108,7 +108,7 @@ Before running the app, make sure you have the following set up:
 
 **Flutter SDK**: Ensure you have Flutter installed. You can check this by running the following command in your terminal:
 
- 	***$ flutter \--version***
+ 	$ flutter --version
 
 *  If you don't have Flutter installed, follow the [installation guide](https://flutter.dev/docs/get-started/install) on the official Flutter website.
 
@@ -127,8 +127,8 @@ Before running the app, make sure you have the following set up:
 1. **Clone the Repository** (if you haven’t already):
 
    * If this project is stored in a Git repository, clone it by running:  
-     ***$ git clone \<repository-url\>***  
-     ***$ cd pricechecker***
+     $ git clone https://github.com/PersonX-46/PriceChecker.git
+     **$ cd pricechecker**
 
 2\. **Install Dependencies**:
 
