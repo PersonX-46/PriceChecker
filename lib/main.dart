@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pricechecker/db_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pricechecker/table_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'build_result_card.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +42,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
   TextEditingController barcodeController = TextEditingController();
   late DBConnection db;
   Timer? _debounce;
-  FocusNode _barcodeFocusNode = FocusNode();
+  final FocusNode _barcodeFocusNode = FocusNode();
   late SharedPreferences prefs;
   bool showLocationPrice = false;
 
@@ -287,7 +286,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                       crossAxisCount: crossAxisCount, // 1 in portrait, 2 in landscape
                       crossAxisSpacing: 8.0,        // Spacing between items horizontally
                       mainAxisSpacing: 8.0, // Spacing between items vertically
-                      childAspectRatio: 2,       // Adjust card proportions
+                      childAspectRatio: orientation == Orientation.landscape ? 1.5 : 1.9,       // Adjust card proportions
                     ),
                     shrinkWrap: false,                // Allows GridView to adjust to its children
                     itemCount: 2,                    // Update this based on the number of cards you have
@@ -303,7 +302,7 @@ class _PriceCheckerPageState extends State<PriceCheckerPage> {
                         );
                       } else if (index == 1) {
                         return buildResultCard(
-                          textSize: 50,
+                          textSize: 60,
                           title: "Unit & Location Price",
                           subtitle: showLocationPrice ? "Location Price" : "Unit Price",
                           value: showLocationPrice ? locationPrice : unitPrice,
